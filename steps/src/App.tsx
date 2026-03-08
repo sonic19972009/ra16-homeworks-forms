@@ -21,10 +21,6 @@ function parseDate(date: string): number {
     return new Date(Number(year), Number(month) - 1, Number(day)).getTime();
 }
 
-function formatDistance(distance: number): string {
-    return Number.isInteger(distance) ? String(distance) : String(distance);
-}
-
 function App() {
     const [form, setForm] = useState<FormData>({
         date: '',
@@ -54,7 +50,8 @@ function App() {
 
         const parsedDistance = Number(trimmedDistance);
 
-        if (Number.isNaN(parsedDistance)) {
+        // защита от отрицательных значений
+        if (Number.isNaN(parsedDistance) || parsedDistance <= 0) {
             return;
         }
 
@@ -81,7 +78,9 @@ function App() {
                 ];
             }
 
-            return [...updatedItems].sort((a, b) => parseDate(b.date) - parseDate(a.date));
+            return [...updatedItems].sort(
+                (a, b) => parseDate(b.date) - parseDate(a.date),
+            );
         });
 
         setForm({
@@ -127,6 +126,7 @@ function App() {
                                 id="distance"
                                 name="distance"
                                 type="number"
+                                min="0.1"
                                 step="0.1"
                                 value={form.distance}
                                 onChange={handleChange}
@@ -148,35 +148,32 @@ function App() {
                 </div>
 
                 <div className="table-body">
-                    {items.length === 0 ? (
-                        <div className="empty-state">Нет данных</div>
-                    ) : (
-                        items.map((item) => (
-                            <div className="table-row" key={item.date}>
-                                <div className="col-date">{item.date}</div>
-                                <div className="col-distance">{formatDistance(item.distance)}</div>
-                                <div className="col-actions">
+                    {items.map((item) => (
+                        <div className="table-row" key={item.date}>
+                            <div className="col-date">{item.date}</div>
+                            <div className="col-distance">{item.distance}</div>
 
-                                    <button
-                                        className="action-btn edit-btn"
-                                        type="button"
-                                        onClick={() => handleEdit(item.date, item.distance)}
-                                    >
-                                        ✎
-                                    </button>
+                            <div className="col-actions">
+                                <button
+                                    className="action-btn edit-btn"
+                                    type="button"
+                                    onClick={() =>
+                                        handleEdit(item.date, item.distance)
+                                    }
+                                >
+                                    ✎
+                                </button>
 
-                                    <button
-                                        className="action-btn delete-btn"
-                                        type="button"
-                                        onClick={() => handleDelete(item.date)}
-                                    >
-                                        ✘
-                                    </button>
-
-                                </div>
+                                <button
+                                    className="action-btn delete-btn"
+                                    type="button"
+                                    onClick={() => handleDelete(item.date)}
+                                >
+                                    ✘
+                                </button>
                             </div>
-                        ))
-                    )}
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
