@@ -27,7 +27,7 @@ function App() {
     }, [backgroundColor]);
 
     const onChange = (event: ChangeEvent<HTMLInputElement>) => {
-        const nextValue = event.target.value;
+        const nextValue = event.target.value.slice(0, 7);
 
         setValue(nextValue);
 
@@ -59,6 +59,8 @@ function App() {
                     type="text"
                     value={value}
                     onChange={onChange}
+                    placeholder="#000000"
+                    maxLength={7}
                 />
                 <span className={`result ${isError ? 'error' : ''}`}>
                     {result || '\u00A0'}
